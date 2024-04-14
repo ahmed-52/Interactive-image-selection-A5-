@@ -54,23 +54,30 @@ public class SelectorApp implements PropertyChangeListener {
         frame = new JFrame("Selector");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        // Add status bar
-        statusLabel = new JLabel();
+
         // TODO 1A: Add `statusLabel` to the bottom of our window.  Stylistic alteration of the
         //  label (i.e., custom fonts and colors) is allowed.
         //  See the BorderLayout tutorial [1] for example code that you can adapt.
         //  [1]: https://docs.oracle.com/javase/tutorial/uiswing/layout/border.html
 
+        // Add status bar 1A
+        statusLabel = new JLabel("NO SELECTION");
+        frame.add(statusLabel,BorderLayout.PAGE_END);
+
+
         // Add image component with scrollbars
         imgPanel = new ImagePanel();
+
         // TODO 1B: Replace the following line with code to put scroll bars around `imgPanel` while
         //  otherwise keeping it in the center of our window.  The scroll pane should also be given
         //  a moderately large preferred size (e.g., between 400 and 700 pixels wide and tall).
         //  The Swing Tutorial has lots of info on scrolling [1], but for this task you only need
         //  the basics from lecture.
         //  [1] https://docs.oracle.com/javase/tutorial/uiswing/components/scrollpane.html
-        frame.add(imgPanel);  // Replace this line
-
+        frame.add(imgPanel,BorderLayout.CENTER);  // Replace this line
+        JScrollPane scrollPane = new JScrollPane(imgPanel);
+        scrollPane.setPreferredSize(new Dimension(500,500));
+        frame.add(scrollPane,BorderLayout.CENTER);
 
         // Add menu bar
         frame.setJMenuBar(makeMenuBar());
@@ -227,6 +234,8 @@ public class SelectorApp implements PropertyChangeListener {
         chooser.setFileFilter(new FileNameExtensionFilter("Image files",
                 ImageIO.getReaderFileSuffixes()));
 
+
+
         // TODO 1C: Complete this method as specified by performing the following tasks:
         //  * Show an "open file" dialog using the above chooser [1].
         //  * If the user selects a file, read it into a BufferedImage [2], then set that as the
@@ -238,7 +247,23 @@ public class SelectorApp implements PropertyChangeListener {
         //  [3] https://docs.oracle.com/javase/tutorial/uiswing/components/dialog.html
         // TODO (embellishment): After a problem, re-show the open dialog.  By reusing the same
         //  chooser, the dialog will show the same directory as before the problem. (1 point)
-        throw new UnsupportedOperationException();  // Replace this line
+
+
+        try{
+            int returnVal = chooser.showOpenDialog(frame);
+            chooser.setAcceptAllFileFilterUsed(true);
+            File file = chooser.getSelectedFile();
+            BufferedImage img = ImageIO.read(file);
+            this.setImage(img);
+        }
+        catch(Exception e) {
+            JOptionPane.showMessageDialog(frame, "Unable to open image file, try again",
+                    "Unsupported Type",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+
+
+
     }
 
     /**
