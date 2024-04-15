@@ -74,6 +74,45 @@ public class PointToPointSelectionModel extends SelectionModel {
         //  for examples).
         //  Test immediately with `testMovePointMiddle()`, and add additional tests per the
         //  corresponding task in the test suite (strongly consider writing the tests first).
-        throw new UnsupportedOperationException();  // Replace this line
+
+
+        ListIterator<PolyLine> iterSelection = selection.listIterator();
+
+
+        while(iterSelection.hasNext()){
+            int currentIndex = iterSelection.nextIndex();
+            PolyLine current = iterSelection.next();
+
+
+            if(currentIndex == index){
+                PolyLine newLine = new PolyLine(newPos,current.end());
+                iterSelection.set(newLine);
+
+                if(currentIndex > 0 ){
+                    iterSelection.previous();
+                    PolyLine previous = iterSelection.previous();
+                    PolyLine newLine2 = new PolyLine(previous.start(),newPos);
+                    iterSelection.set(newLine2);
+                }
+
+                break;
+            }
+
+
+        }
+
+        if(index == 0 && !selection.isEmpty()){
+            iterSelection = selection.listIterator(selection.size()-1);
+            PolyLine lastSegment = iterSelection.next();
+            PolyLine newLastSegment = new PolyLine(lastSegment.start(),newPos);
+            iterSelection.set(newLastSegment);
+            start = newPos;
+        }
+
+        propSupport.firePropertyChange("selection",null,selection());
+
+
+
+
     }
 }

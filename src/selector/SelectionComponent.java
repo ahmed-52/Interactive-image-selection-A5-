@@ -154,6 +154,7 @@ public class SelectionComponent extends JComponent implements MouseListener, Mou
         // Draw perimeter
         paintSelectionPerimeter(g, segments);
 
+
         // If dragging a point, draw guide lines
         if (isInteractingWithPoint() && mouseLocation != null) {
             paintMoveGuides(g, segments);
@@ -176,7 +177,7 @@ public class SelectionComponent extends JComponent implements MouseListener, Mou
      */
     private void paintSelectionPerimeter(Graphics g, List<PolyLine> segments) {
 
-        g.setColor(Color.blue);
+        g.setColor(selectionPerimeterColor);
         for (PolyLine segment: segments) {
             Point point1 = segment.start();
             Point point2 = segment.end();
@@ -186,6 +187,11 @@ public class SelectionComponent extends JComponent implements MouseListener, Mou
             int x2 = point2.x;
             int y2 = point2.y;
             g.drawLine(x1,y1,x2,y2);
+
+
+
+
+
         }
 
         // TODO 3B: Implement this method as specified.
@@ -202,7 +208,7 @@ public class SelectionComponent extends JComponent implements MouseListener, Mou
         // TODO 3C: Implement this method as specified.  The same Graphics methods you used in
         //  `paintSelectionPerimeter()` are relevant here.
 
-        g.setColor(Color.yellow);
+        g.setColor(liveWireColor);
         PolyLine line = model.liveWire(mouseLocation);
 
 
@@ -226,6 +232,20 @@ public class SelectionComponent extends JComponent implements MouseListener, Mou
     private void paintControlPoints(Graphics g, List<PolyLine> segments) {
         // TODO 4A: Implement this method as specified.  Pay careful attention to the arguments
         //  expected by your chosen Graphics API call.
+
+        g.setColor(controlPointColor);
+
+        for (PolyLine line :segments){
+
+            Point point = line.start();
+            g.fillOval(point.x-controlPointRadius,point.y-controlPointRadius,
+                    controlPointRadius*2,controlPointRadius*2);
+            point = line.end();
+            g.fillOval(point.x-controlPointRadius,point.y-controlPointRadius,
+                    controlPointRadius*2,controlPointRadius*2);
+        }
+        System.out.println("im being called");
+
     }
 
     /**

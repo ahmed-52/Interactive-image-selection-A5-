@@ -319,12 +319,47 @@ public class SelectorApp implements PropertyChangeListener {
         //  [1] https://docs.oracle.com/javase/tutorial/uiswing/components/filechooser.html
         //  [2] https://docs.oracle.com/javase/tutorial/uiswing/components/dialog.html
         // TODO (embellishment):
-        //  * If the selected filename does not end in ".png", append that extension. (1 point)
-        //  * Prompt with a yes/no/cancel dialog before overwriting a file. (1 point)
+        //  * If the selected filename does not end in ".png", append that extension. (1 point) DONE!
+        //  * Prompt with a yes/no/cancel dialog before overwriting a file. (1 point) DONE!
         //  * After an IOException, or after user selects "No" (instead of "Cancel") when prompted,
         //    re-show the save dialog.  By reusing the same chooser, the dialog will show the same
         //    directory as before the problem. (1 point)
-        throw new UnsupportedOperationException();  // Replace this line
+        chooser.showSaveDialog(frame);
+        File file = chooser.getSelectedFile();
+        if (!file.getName().toLowerCase().endsWith(".png")) {
+            file = new File(file.getParentFile(), file.getName() + ".png");
+        }
+
+
+        if (file.exists()) {
+            int confirm = JOptionPane.showConfirmDialog(
+                    frame,
+                    "The file already exists. Do you want to overwrite it?",
+                    "Overwrite File?",
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.WARNING_MESSAGE
+            );
+            if (confirm != JOptionPane.YES_OPTION) {
+                if (confirm == JOptionPane.NO_OPTION) {
+                    saveSelection();
+                }
+                return;
+            }
+        }
+
+
+        try{
+            OutputStream out = new FileOutputStream(file);
+            model.saveSelection(out);
+
+        } catch (Exception e){
+            JOptionPane.showMessageDialog(
+                    frame,
+                    "Failed to save the image: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 
     /**
