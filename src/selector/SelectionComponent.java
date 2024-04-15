@@ -175,6 +175,19 @@ public class SelectionComponent extends JComponent implements MouseListener, Mou
      * color.
      */
     private void paintSelectionPerimeter(Graphics g, List<PolyLine> segments) {
+
+        g.setColor(Color.blue);
+        for (PolyLine segment: segments) {
+            Point point1 = segment.start();
+            Point point2 = segment.end();
+
+            int x1 = point1.x;
+            int y1 = point1.y;
+            int x2 = point2.x;
+            int y2 = point2.y;
+            g.drawLine(x1,y1,x2,y2);
+        }
+
         // TODO 3B: Implement this method as specified.
         //  The Graphics API documentation [1] is essential to finding appropriate methods to draw
         //  the segments and control their color.
@@ -188,6 +201,21 @@ public class SelectionComponent extends JComponent implements MouseListener, Mou
     private void paintLiveWire(Graphics g) {
         // TODO 3C: Implement this method as specified.  The same Graphics methods you used in
         //  `paintSelectionPerimeter()` are relevant here.
+
+        g.setColor(Color.yellow);
+        PolyLine line = model.liveWire(mouseLocation);
+
+
+        Point point1 = line.start();
+        Point point2 = line.end();
+
+
+        int x1 = point1.x;
+        int y1 = point1.y;
+        int x2 = point2.x;
+        int y2 = point2.y;
+
+        g.drawLine(x1,y1,x2,y2);
     }
 
     /**
@@ -229,6 +257,13 @@ public class SelectionComponent extends JComponent implements MouseListener, Mou
         //  The MouseListener [1] and MouseMotionListener [2] tutorials may be helpful.
         //  [1] https://docs.oracle.com/javase/tutorial/uiswing/events/mouselistener.html
         //  [2] https://docs.oracle.com/javase/tutorial/uiswing/events/mousemotionlistener.html
+
+        if (e.getButton() == MouseEvent.BUTTON1){model.addPoint(e.getPoint());}
+
+        else if(e.getButton() == MouseEvent.BUTTON2){model.finishSelection();}
+
+        else if (e.getButton()==MouseEvent.BUTTON3){model.undo();}
+
     }
 
     /**

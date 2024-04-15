@@ -84,6 +84,9 @@ public class SelectorApp implements PropertyChangeListener {
 
         // Add control buttons
         // TODO 3E: Call `makeControlPanel()`, then add the result to the window next to the image.
+        JPanel panel = makeControlPanel();
+        frame.add(panel,BorderLayout.EAST);
+
 
         // Controller: Set initial selection tool and update components to reflect its state
         setSelectionModel(new PointToPointSelectionModel(true));
@@ -145,7 +148,32 @@ public class SelectorApp implements PropertyChangeListener {
         //  [1] https://docs.oracle.com/javase/tutorial/uiswing/components/panel.html
         //  [2] https://docs.oracle.com/javase/tutorial/uiswing/layout/grid.html
         //  [3] https://docs.oracle.com/javase/tutorial/uiswing/layout/visual.html
-        throw new UnsupportedOperationException();  // Replace this line
+
+
+        JPanel panel = new JPanel();
+        GridLayout grid = new GridLayout(4,1);
+        panel.setLayout(grid);
+
+
+        cancelButton = new JButton("Cancel");
+        undoButton= new JButton("Undo");
+        resetButton= new JButton("Reset");
+        finishButton = new JButton("Finish");
+
+        panel.add(cancelButton);
+        panel.add(undoButton);
+        panel.add(resetButton);
+        panel.add(finishButton);
+
+        cancelButton.addActionListener(e -> model.cancelProcessing());
+        undoButton.addActionListener(e -> model.undo());
+        resetButton.addActionListener(e -> model.reset());
+        finishButton.addActionListener(e -> model.finishSelection());
+
+
+
+        // not printing the errors to the console log
+        return panel;
     }
 
     /**
@@ -176,6 +204,13 @@ public class SelectorApp implements PropertyChangeListener {
     private void reflectSelectionState(SelectionState state) {
         // Update status bar to show current state
         statusLabel.setText(state.toString());
+
+        cancelButton.setEnabled(state == PROCESSING);
+        undoButton.setEnabled(state != NO_SELECTION);
+        resetButton.setEnabled(state != NO_SELECTION);
+        finishButton.setEnabled(state == SELECTING);
+        saveItem.setEnabled(state == SELECTED);
+
 
         // TODO 3F: Enable/disable components (both buttons and menu items) as follows:
         //  * Cancel is only allowed when the selection is processing
@@ -251,7 +286,6 @@ public class SelectorApp implements PropertyChangeListener {
 
         try{
             int returnVal = chooser.showOpenDialog(frame);
-            chooser.setAcceptAllFileFilterUsed(true);
             File file = chooser.getSelectedFile();
             BufferedImage img = ImageIO.read(file);
             this.setImage(img);

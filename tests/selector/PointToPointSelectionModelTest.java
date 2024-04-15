@@ -133,11 +133,53 @@ class PointToPointSelectionModelTest {
 
     // TODO 2D: Add a test case covering `liveWire()` when the selection path is non-empty.  Check
     //  returned value.
+    @Test
+    void testLiveWire() {
+        SelectionModel model = new PointToPointSelectionModel(false);
+        Point startPoint = new Point(0, 0);
+        Point somePoint = new Point(5, 5);
+        Point a = new Point(6, 7);
+        model.addPoint(startPoint);
+        model.addPoint(somePoint);
+        model.addPoint(a);
 
-    // TODO 2E: Add a test case covering `undo()` when the selection path is non-empty.  Check
+        // Perform the test action
+        Point mouseLocation = new Point(1, 2);
+        PolyLine wire = model.liveWire(mouseLocation);
+
+        // Verify the consequences
+        PolyLine expectedWire = new PolyLine(model.lastPoint(), mouseLocation);
+        assertEquals(expectedWire, wire);
+    }
+
+    // TODO 2F: Add a test case covering `undo()` when the selection path is non-empty.  Check
     //  expected state, absence of state change notification, expected selection size, occurrence of
     //  selection change notification, and expected last point.  See `testUndoSelected()` for
     //  inspiration.
+
+    @Test
+    void testUndoCurrentSelection() {
+        // Set up the test scenario
+        SelectionModel model = new PointToPointSelectionModel(false);
+        model.addPoint(new Point(0, 0));
+        model.addPoint(new Point(10, 0));
+        model.addPoint(new Point(10, 10));
+
+
+        // Only listen for events after we are done with test setup
+        PclTester observer = new PclTester();
+        model.addPropertyChangeListener(observer);
+
+        // Perform the test action
+        model.undo();
+
+        observer.assertNoChanges();
+
+        assertEquals(1, model.selection().size());
+        assertEquals(new Point(10, 0), model.lastPoint());
+    }
+
+
 
     @DisplayName("GIVEN a model in the SELECTING state with a non-empty selection path, WHEN the "
             + "selection is finished, THEN it will transition to the SELECTED state, notifying "
