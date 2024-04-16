@@ -9,6 +9,7 @@ import java.awt.Point;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -254,13 +255,38 @@ public abstract class SelectionModel {
      * selection is not yet finished.
      */
     public int closestPoint(Point p, int maxDistanceSq) {
-        assert state == SELECTED;
+//        assert state == SELECTED; came with code, commented out because statement below will
+//        always be false, violationg the `Throws an IllegalStateException if our
+//     * selection is not yet finished`
+
+        if(state != SELECTED){throw new IllegalStateException();}
+
+        int index = -1;
+        int small = Integer.MAX_VALUE;
+
+        int i = 0;
+        for(PolyLine line:selection){
+//
+            int dx = p.x - line.start().x;
+            int dy = p.y - line.start().y;
+            int distance = dx * dx + dy * dy;
+            if (distance <= maxDistanceSq){
+                if(distance < small){
+                    small = distance;
+                    index = i;
+                }
+            }
+            i++;
+        }
+
         // TODO 3H: Implement as specified.  Note that the argument is the _square_ of the maximum
         //  distance; you can take advantage of this to avoid doing any floating-point math.
         //  Test immediately with the provided `testClosestPoint*()` cases, and add additional tests
         //  per the corresponding task in the test suite (consider writing the tests first).
         //  Note that, by this indexing convention, the index of `start` is 0.
-        throw new UnsupportedOperationException();  // Replace this line
+
+        return index;
+
     }
 
     /**

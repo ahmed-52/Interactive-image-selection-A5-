@@ -244,7 +244,7 @@ public class SelectionComponent extends JComponent implements MouseListener, Mou
             g.fillOval(point.x-controlPointRadius,point.y-controlPointRadius,
                     controlPointRadius*2,controlPointRadius*2);
         }
-        System.out.println("im being called");
+
 
     }
 
@@ -255,6 +255,7 @@ public class SelectionComponent extends JComponent implements MouseListener, Mou
      */
     private void paintMoveGuides(Graphics g, List<PolyLine> segments) {
         // TODO 4G: Implement this method as specified.
+
     }
 
     /* Event listeners */
@@ -271,20 +272,27 @@ public class SelectionComponent extends JComponent implements MouseListener, Mou
      */
     @Override
     public void mouseClicked(MouseEvent e) {
-        updateMouseLocation(e.getPoint());
+        updateMouseLocation(e.getPoint());  // Always update the mouse location first
 
-        // TODO 3A: Implement this method as specified.
-        //  The MouseListener [1] and MouseMotionListener [2] tutorials may be helpful.
-        //  [1] https://docs.oracle.com/javase/tutorial/uiswing/events/mouselistener.html
-        //  [2] https://docs.oracle.com/javase/tutorial/uiswing/events/mousemotionlistener.html
+        // Handle actions based on mouse button and selection state
+        if (e.getButton() == MouseEvent.BUTTON1) {
 
-        if (e.getButton() == MouseEvent.BUTTON1){model.addPoint(e.getPoint());}
+            if (model.state() == SELECTING || model.state() == NO_SELECTION) {
+                model.addPoint(e.getPoint());
+            }
+        } else if (e.getButton() == MouseEvent.BUTTON2) {
 
-        else if(e.getButton() == MouseEvent.BUTTON2){model.finishSelection();}
+            if (model.state() == SELECTING) {
+                model.finishSelection();
+            }
+        } else if (e.getButton() == MouseEvent.BUTTON3) {
 
-        else if (e.getButton()==MouseEvent.BUTTON3){model.undo();}
-
+            if (model.state() == SELECTING || model.state() == SELECTED) {
+                model.undo();
+            }
+        }
     }
+
 
     /**
      * When a selection is in progress, update our last-observed mouse location to the location of
@@ -316,8 +324,23 @@ public class SelectionComponent extends JComponent implements MouseListener, Mou
      */
     @Override
     public void mousePressed(MouseEvent e) {
+
         // TODO 4F: Implement this method as specified.  Recall that the `selectedIndex` field is
         //  used to remember which control point a user is currently interacting with.
+
+
+        if(e.getButton() == MouseEvent.BUTTON1){
+            if(model.state() == SELECTED){
+                int maxDistanceSq = controlPointRadius * controlPointRadius;
+                Point clickPoint = e.getPoint();
+                int closestIndex = model.closestPoint(clickPoint, maxDistanceSq);
+                if (closestIndex != -1) { // Valid control point found within the threshold
+                    selectedIndex = closestIndex; // Select this control point
+                } else {
+                    selectedIndex = -1; // No control point is close enough, reset the selected index
+                }
+            }
+        }
     }
 
     /**
