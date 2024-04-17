@@ -253,29 +253,36 @@ public class SelectionComponent extends JComponent implements MouseListener, Mou
      * points before and after our selected point.  Requires `selectedIndex` is in
      * [0..segments.size()).
      */
+
     private void paintMoveGuides(Graphics g, List<PolyLine> segments) {
         // TODO 4G: Implement this method as specified.
         if (selectedIndex < 0 || selectedIndex >= segments.size()) {
             return;
         }
 
-        PolyLine seg = segments.get(selectedIndex);
-        Point pnt = seg.start();
+        if (isInteractingWithPoint()) {
+            g.setColor(liveWireColor);
 
-        g.drawLine(mouseLocation.x, mouseLocation.y, pnt.x, pnt.y);
 
-        if (selectedIndex > 0) {
-            PolyLine prevSeg = segments.get(selectedIndex - 1);
-            Point prevPnt = prevSeg.end();
-            g.drawLine(pnt.x, pnt.y, prevPnt.x, prevPnt.y);
-        }
+            int precedingIndex = selectedIndex == 0 ? segments.size() - 1 : selectedIndex - 1;
+            int followingIndex = selectedIndex == segments.size() - 1 ? 0 : selectedIndex + 1;
 
-        if (selectedIndex < segments.size() - 1) {
-            PolyLine nextSeg = segments.get(selectedIndex + 1);
-            Point nextPnt = nextSeg.start();
-            g.drawLine(pnt.x, pnt.y, nextPnt.x, nextPnt.y);
+
+            PolyLine precedingSegment = segments.get(precedingIndex);
+            PolyLine followingSegment = segments.get(followingIndex);
+
+
+            Point precedingPoint = precedingSegment.start();
+            Point followingPoint = followingSegment.end();
+
+
+            g.drawLine(precedingPoint.x, precedingPoint.y, mouseLocation.x, mouseLocation.y);
+
+            g.drawLine(mouseLocation.x, mouseLocation.y, followingPoint.x, followingPoint.y);
         }
     }
+
+
 
 
     /* Event listeners */
