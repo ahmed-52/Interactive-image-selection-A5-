@@ -255,8 +255,28 @@ public class SelectionComponent extends JComponent implements MouseListener, Mou
      */
     private void paintMoveGuides(Graphics g, List<PolyLine> segments) {
         // TODO 4G: Implement this method as specified.
+        if (selectedIndex < 0 || selectedIndex >= segments.size()) {
+            return;
+        }
 
+        PolyLine seg = segments.get(selectedIndex);
+        Point pnt = seg.start();
+
+        g.drawLine(mouseLocation.x, mouseLocation.y, pnt.x, pnt.y);
+
+        if (selectedIndex > 0) {
+            PolyLine prevSeg = segments.get(selectedIndex - 1);
+            Point prevPnt = prevSeg.end();
+            g.drawLine(pnt.x, pnt.y, prevPnt.x, prevPnt.y);
+        }
+
+        if (selectedIndex < segments.size() - 1) {
+            PolyLine nextSeg = segments.get(selectedIndex + 1);
+            Point nextPnt = nextSeg.start();
+            g.drawLine(pnt.x, pnt.y, nextPnt.x, nextPnt.y);
+        }
     }
+
 
     /* Event listeners */
 

@@ -271,10 +271,22 @@ class PointToPointSelectionModelTest {
         PolyLine afterSegment = model.selection().get(1);
         assertEquals(new Point(11, 12), beforeSegment.end());
         assertEquals(new Point(11, 12), afterSegment.start());
+
+        // Test moving the starting point of the selection
+        model.movePoint(0, new Point(5, 5));
+        observer.assertChanged("selection");
+
+        PolyLine beforeSegment2 = model.selection().get(0);
+        PolyLine afterSegment2 = model.selection().get(model.selection().size() - 1);
+
+        assertEquals(new Point(5, 5), beforeSegment2.start());
+        assertEquals(new Point(5, 5), afterSegment2.end());
     }
 
     // TODO 4C: Write at least one additional test case for `movePoint()` that moves the starting
     //  point of the selection.
+
+
 
     /* Tests of closestPoint() */
 
@@ -297,9 +309,14 @@ class PointToPointSelectionModelTest {
         assertEquals(-1, model.closestPoint(new Point(100, -100), 9));
     }
 
+
     // TODO 4E: Write at least one additional test case for `closestPoint()` where the queried
     //  location is within the maximum distance of an unambiguously closest point but not directly
     //  on top of it.
+    void testClosestPointMax() {
+        SelectionModel model = makeSquareSelection();
+        assertEquals(1, model.closestPoint(new Point(12, -1), 25));
+    }
 }
 
 /**
